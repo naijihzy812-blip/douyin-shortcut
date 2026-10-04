@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>添加 会客/观影模式</title>
+<style>
+/* Layout: one phone-width column; two add cards, then the three setup steps in order */
+:root{
+  --bg:#F2F2F7; --card:#FFFFFF; --fg:#1C1C1E; --muted:#6C6C70; --line:#E3E3E8;
+  --accent:#0A5BD3; --accent-fg:#FFFFFF; --warm:#E8833A; --cool:#5B4FD6;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#000000; --card:#1C1C1E; --fg:#F2F2F7; --muted:#9A9AA1; --line:#38383A;
+  --accent:#3D8BFF; --accent-fg:#FFFFFF; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  padding:calc(env(safe-area-inset-top,0px) + 32px) 16px calc(env(safe-area-inset-bottom,0px) + 40px)}
+main{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:26px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:4px 0 0;font-size:14px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sc{border-radius:16px;padding:14px;color:#fff;display:flex;flex-direction:column;gap:10px;min-width:0}
+.sc.warm{background:var(--warm)} .sc.cool{background:var(--cool)}
+.sc b{font-size:18px}
+.sc span{font-size:13px;opacity:.9}
+.sc a{display:block;text-align:center;text-decoration:none;font-weight:600;font-size:15px;padding:10px;border-radius:10px;background:rgba(255,255,255,.95);color:#1C1C1E}
+.sc a.dl{background:transparent;color:#fff;font-weight:500;font-size:13px;padding:0;text-decoration:underline}
+h2{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.05em;margin:0 0 6px 4px}
+.card{background:var(--card);border-radius:12px;padding:14px 16px}
+.card ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.card p{margin:0}
+.note{font-size:13px;color:var(--muted);margin:8px 4px 0}
+.status{font-size:13px;color:var(--muted);text-align:center;margin:0;min-height:1.4em}
+#desk{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+#qr{background:#fff;padding:12px;border-radius:12px}
+footer{text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>会客 · 观影模式</h1>
+    <p class="sub">轻点手机背面两下进入会客模式，打开指定 App 自动进入观影模式</p>
+  </header>
+
+  <section id="desk" hidden>
+    <p class="sub">请用 iPhone 相机扫码打开本页</p>
+    <div id="qr"></div>
+  </section>
+
+  <section id="ios" hidden>
+    <h2>第一步 · 添加两条快捷指令</h2>
+    <div class="cards">
+      <div class="sc warm"><b>会客模式</b><span>轻点背面两下</span>
+        <a href="#" data-name="会客模式">添加</a><a class="dl" href="#" data-file="会客模式">没反应？下载文件</a></div>
+      <div class="sc cool"><b>观影模式</b><span>打开 App 时</span>
+        <a href="#" data-name="观影模式">添加</a><a class="dl" href="#" data-file="观影模式">没反应？下载文件</a></div>
+    </div>
+    <p class="note">点“下载文件”后：Safari 地址栏左边的下载图标 → 点文件 → 添加快捷指令。</p>
+  </section>
+
+  <section>
+    <h2>第二步 · 选上场景（每条点一次）</h2>
+    <div class="card"><ol>
+      <li>在快捷指令 App 里点开 <b>会客模式</b>。</li>
+      <li>点里面的 <b>控制家居</b> 动作，选你的家庭，再选 <b>会客模式</b> 场景，点完成。</li>
+      <li><b>观影模式</b> 同样操作，选 <b>观影模式</b> 场景。</li>
+    </ol></div>
+    <p class="note">场景跟你家的设备绑定，只能在你手机上选，没法提前填好。</p>
+  </section>
+
+  <section>
+    <h2>第三步 · 设置触发方式</h2>
+    <div class="card"><ol>
+      <li><b>会客模式</b>：设置 → 辅助功能 → 触控 → 轻点背面 → 轻点两下 → 选“会客模式”。</li>
+      <li><b>观影模式</b>：快捷指令 App 底部“自动化” → + → App → 选择你要的 App → 勾“已打开” → 立即运行 → 下一步 → 新建空白自动化 → 添加“运行快捷指令” → 选“观影模式” → 完成。</li>
+    </ol></div>
+  </section>
+
+  <footer>设置完后：敲两下手机背面试会客模式；打开选好的 App 试观影模式</footer>
+</main>
+
+<script>
+(function(){
+  var ua = navigator.userAgent;
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  function fileUrl(n){ return new URL(n + '.shortcut', location.href).href; }
+  if (isIOS) {
+    document.getElementById('ios').hidden = false;
+    document.querySelectorAll('[data-name]').forEach(function(a){
+      var n = a.getAttribute('data-name');
+      a.href = 'shortcuts://import-shortcut?url=' + encodeURIComponent(fileUrl(n)) + '&name=' + encodeURIComponent(n);
+    });
+    document.querySelectorAll('[data-file]').forEach(function(a){
+      var n = a.getAttribute('data-file');
+      a.href = fileUrl(n); a.setAttribute('download', n + '.shortcut');
+    });
+  } else {
+    document.getElementById('desk').hidden = false;
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = function(){ new QRCode(document.getElementById('qr'), {text: location.href, width: 220, height: 220}); };
+    document.head.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
