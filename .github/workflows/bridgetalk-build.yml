@@ -1,0 +1,26 @@
+name: BridgeTalk iPhone build
+on:
+  push:
+    branches: [bridgetalk-build]
+permissions:
+  contents: read
+jobs:
+  iphone:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test and compile
+        working-directory: BridgeTalk-Offline
+        run: |
+          set -eu
+          xcodebuild -version
+          swift test
+          xcodebuild -project BridgeTalk.xcodeproj -scheme BridgeTalk -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build
+          python3 scripts/package_unsigned.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BridgeTalk-UNSIGNED
+          path: BridgeTalk-Offline/build/BridgeTalk-UNSIGNED.ipa
+          retention-days: 1
+          if-no-files-found: error
